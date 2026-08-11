@@ -24,3 +24,14 @@ Bugün öğrendiklerim(24.07.26)
     * or: En az bir ifade doğruysa True değeri döndürür. Tüm ifadeler yanlışsa sonuç yanlış olur.
 not operatörü: if yapısı içindeki koşulun sonucu True ise False, False ise True yapar.
 - İlk if yapısı doğru ise bloğun içine girer ve içerideki if yapısına bakar doğruysa içine şeklinde devam eder. Bu durum kodun okunabilirliğini azaltır ve hata ayıklamayı zorlaştırır. 
+- pass bir değişken değil bir ifadedir. kullanım amaçları:
+    * Yer tutucu: Gövdesi boş bırakılmış fonksiyon veya sınıflardan, gelecekte eklenecek kod için yer tutucu olarak kullanılır.
+    * Döngü kontrolü: Döngü içinde, mevcut yinelemeyi atlamak ve bir sonraki yinelemeye devam etmek için kullanılır.
+ pass ifadesi, bir ifadenin beklendiği her yerde kullanılabilir. Ancak, bir hata oluşmadığı sürece, yorumlayıcı pass ifadesiyle karşılaştığında bunu yok sayar ve hata vermeden devam eder.
+* for: Belirli bir aralık veya koleksiyon üzerinde yineleme yapmak için kullanılır.
+* while: Koşul doğru olduğu sürece çalışır; koşula bağlı tekrarlar için tercih edilir.
+* break: Döngüyü tamamen sonlandırır.
+* continue: Döngünün o adımını atlayıp sonraki adıma geçer.
+* pass: Hiçbir şey yapmaz; boş bloklar için yer tutucu olarak kullanılır.
+* range(): Belirtilen aralıkta sayılar üretir, genellikle for döngüsüyle birlikte kullanılır.
+* enumerate(): Bir koleksiyon üzerinde hem elemanları hem de indekslerini birlikte döndürür.
