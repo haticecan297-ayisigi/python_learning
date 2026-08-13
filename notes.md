@@ -35,3 +35,11 @@ not operatörü: if yapısı içindeki koşulun sonucu True ise False, False ise
 * pass: Hiçbir şey yapmaz; boş bloklar için yer tutucu olarak kullanılır.
 * range(): Belirtilen aralıkta sayılar üretir, genellikle for döngüsüyle birlikte kullanılır.
 * enumerate(): Bir koleksiyon üzerinde hem elemanları hem de indekslerini birlikte döndürür.
+- Fonksiyon tanımlarken def anahtarını kullanırız.
+- parameter fonksiyon tanımında kullandığımız değişkendir, argument ise fonksiyonu çağırırken parameter yerlerine koyduğumuz gerçek değerlerdir.
+- Default parameter: Bir kaç parameter'a sahip fonksiyonda tüm parameter yerine birkaç argument girmediğimizde fonksiyonun çalışması için o parametrenin sahip olacağı en olası veriyi default olarak tanımlamaktır. Yani o değer yerine başka bir değer girilmediğinde o değer varsayılan olarak çalışır. 
+- Docstring: Python'da fonksiyonların ne işe yaradığını fonksiyonun tanımını yaparken en  üstünde kısaca açıklayan yazılardır.
+- Local Variables: Bir fonksiyon içinde tanımlanan ve sadece fonksiyon içinde kullanılabilen bir değişkendir.
+- Global Variables: Fonksiyonların dışında tanımlanan ve istenilen yerde kullanılabilen değişkenlerdir eğer fonksiyon içinde bu değişkenleri kullanmak istersek 'global' key kullanılır.
+- *args: Kaç tane değer geleceğini bilmediğimiz durumlarda fonksiyona sınırsız sayıda argüman göndermemizi sağlar. Verileri tuple olarak tutar.
+- **kwargs: Hangi isimli parametre geleceğini bilmediğimizde fonksiyona sınırsız sayıda keyword argümanı göndermek için kullanılır. Bir dictionary olarak saklanır.
