@@ -1,4 +1,4 @@
-Bugün öğrendiklerim(24.07.26)
+### Week-01
 
 - Python'da değişken tanımlarken veri tipi belirtilmez.
 - input() her zaman string döndürür.
