@@ -1,0 +1,4 @@
+Hello Python!
+This is my learning journey
+Today I'm learning file handing
+I love writing code

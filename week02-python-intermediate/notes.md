@@ -1,0 +1,4 @@
+- Bir dosya oluşturduktan sonra onun yerini değiştirmediğimde tekrar o isimde "w" modunda bir dosya oluşturduğumda eski dosya geri dönmemek üzere siliniyor ama oluşturulduğu klasör veya masaüstünden yerini değiiştirdiğimde o dosya korundu. Her zaman işe yarar mı bilmiyorum şu an ama gözlemim bu şekilde olduğu için aktarıyorum.
+- "a" modu ile dosyaya bir şey eklemek istedim ama yerini değiiştirdiğim dosyaya eklenmedi, tekrar o konumda dosya oluştu ve eklediğim yazı da dosyada vardı.
+- readlines() fonksiyonu bir dosyadaki tüm satırları okuyup bir liste halinde döndürür. Her bir satır listenin birer elemanıdır.Satırları tek tek işlemek için uygundur.
+- "r+" modunda dosyaya bir şey ekleyince başa ekliyor(sanırım[imleç neredeyse ekliyor da olabilir])
