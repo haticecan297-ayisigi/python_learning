@@ -349,3 +349,19 @@ Modüllerin temel amacı kodu:
     düzenlemek,
     tekrar kullanılabilir hale getirmek,
     büyük projelerin yönetimini kolaylaştırmaktır.
+
+# OOP BASİCS
+## OOP Nedir?
+Nesne yönelikli programlama, programı nesneler ve bu nesnelerin özellikleri ile davranışları etrafında düzenlyen bir programlama yaklaşımıdır. Örneğin bir öğrenci nesnesi:
+    - Attributes(Özellikler): Ad, soyad, numara, notlar
+    - Methods(Davranışlar): Not hesaplama, bilgileri gösterme
+
+## Temel Kavramlar
+* class: Nesnelerin yapısını tanımlayan şablon
+* Object: Sınıftan oluşturulan somut örnek
+* Attribute: Nesnenin sahip olduğu veri
+* Method: Sınıf içinde tanımlanan fonksiyon
+* Instance: Bir sınıfın oluşturulmuş örneği
+
+!!! Procedural ve OOP yaklaşımı:
+     Aynı problemi dictinory ve class ile yazılmasını ifade ediyor. Fonksiyon ve dic ile yazmak mı yoksa oop yaklaşımıyla class oluşturmak mı daha faydalı olacağı uzerinde kafa yorma yaklaşımıdır. Amaç, OOP'nin her zaman daha iyi olduğunu düşünmek değil; hangi yaklaşımın hangi durumda faydalı olduğunu anlamaktır.
