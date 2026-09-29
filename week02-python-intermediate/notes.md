@@ -365,3 +365,25 @@ Nesne yönelikli programlama, programı nesneler ve bu nesnelerin özellikleri i
 
 !!! Procedural ve OOP yaklaşımı:
      Aynı problemi dictinory ve class ile yazılmasını ifade ediyor. Fonksiyon ve dic ile yazmak mı yoksa oop yaklaşımıyla class oluşturmak mı daha faydalı olacağı uzerinde kafa yorma yaklaşımıdır. Amaç, OOP'nin her zaman daha iyi olduğunu düşünmek değil; hangi yaklaşımın hangi durumda faydalı olduğunu anlamaktır.
+## __init__ metodu
+Bir nesne oluşturulduğunda başlangıç değerlerini belirlemek için kullanılan özel metottur.
+- Ne zaman çalışır? Bir sınıftan bir nesne oluşturulduğunda otomatik çalışır.
+- Parametreleri nasıl tanımlanır? self parametresinden sonra istediğiniz parametreyi ekleyebiliriz. def __init__(self, parametre1, parametre2)
+- Nesnenin başlangıç özellikleri naıl belirlenir?  Parametrelerden gelen değerleri self kullanarak nesnenin özelliklerine atarız. def __init__(self, parametre):  self.değişken = parametre
+
+## self kavramı
+self kavramı sınıfın mevcut nesnesini temsil eder. Bir nesnenin kendi verilerine ve metotlarına erişmesini sağlar. Bu mevcut nesne class olunca otomatik oluşturulan default nesnedir.
+- Neden ilk parametre olduğuna gelirsek, Python bir nesnenin metodunu çağırdığında, o nesneyi otomatik olarak ilk parametre olarak gönderir. Örneğin: 
+    class person:
+        def selam_ver(self):
+            print("Merhaba")
+    kisi1 = person()
+    kisi1.selam_ver()
+Python bunu arka planda şöyle yorumlar: person.selam_ver(kisi1) yani person class'ındaki selam_ver() metodunun ilk parametresi olur. Yani kisi1 nesnesi otomatik olarak ilk parametreye gönderilir. Bu yüzden ilk parametrenin adı genellikle self olur.
+- İki farklı nesnenin özellikleri nasıl birbirinden bağımsız tutulur? Bu soruyu soruyorum çünkü bunu self yapar. Her nesne bellekte ayrı bir alanı vardır ve self sayesinde her nesne kendi verisini saklar.
+
+## Istance Attributes ve Istance Methods
+Bu konu, bir nesnenin neleri bildiğini ve neler yapabildiğini anlamamızı sağlar.
+- Instance Attribute (Örnek Özniteliği): Nesneye ait veri veya özellik.
+- Instance Method (Örnek Metodu): Nesne üzerinde işlem yapan fonksiyon.
+Bir insanı düşünün: Adı, yaşı, boyu özellikleridir yani Attributes; yürümek, koşmak, yemek yemek ise davranışlarıdır yani Methods.
