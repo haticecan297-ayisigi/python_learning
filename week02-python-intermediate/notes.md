@@ -387,3 +387,156 @@ Bu konu, bir nesnenin neleri bildiğini ve neler yapabildiğini anlamamızı sa�
 - Instance Attribute (Örnek Özniteliği): Nesneye ait veri veya özellik.
 - Instance Method (Örnek Metodu): Nesne üzerinde işlem yapan fonksiyon.
 Bir insanı düşünün: Adı, yaşı, boyu özellikleridir yani Attributes; yürümek, koşmak, yemek yemek ise davranışlarıdır yani Methods.
+
+# Encapsulation( Kapsülleme )
+Encapsulation, bir nesnenin: verilerini(attributes), bu verilere erişen metotları(methods) tek bir yapı içinde toplama ve veriye erişimi kontrollü hale getirme prensibidir. Basitçe: Nesnenin iç detaylarını sakla, dış dünyaya yalnızca gerekli olan kısmı göster. Encapsulation gerekli olma sebebi yania amacı:
+- Veri Güvenliği: Hatalı değişikleri önlemek
+- Kontrol: Veri üzerinde kurallar koymak
+- Bakım Kolaylığı: Kodun iç yapısını değiştirebilmek
+- Hata Azaltma: Geçersiz değerlerin atanmasını engellemek
+
+Encapsulation erişim kontrolü sağlıyor ve bunu isimlendirmedeki bazı kurallar yardımıyla yapıyor. Bu kurallar erişim belirleyicilerdir.
+# Erişim Belirleyiciler
+Python'da C++ ve Java gibi public/protected/privite yapıları yoktur bunu erişim belirleyiciler yardımıyla yapıyoruz.
+* Public Attribute(name): Tek alt çizgisiz isimdir.Örneğin:
+    class Person:                Kullanımı:
+        def __init__(self):                 p = Person()
+        self.name = "Hatice"                print(p.name)
+                                            p.name = "Ali"
+* Protected Attribute(_name): İsimlendirmeden önce tek çizgi kullanırsın. Bu bir kuraldır ve Python "Buna erişebilirsin ama erişmemelisin." demeye çalışır. Yani gerçek protected değil lütfen dokunma uyarısıdır.
+* Private Attribute(__name): İsimlendirirken çift alt çizgi kullanırsın.Örneğin:
+    class person:
+        def __init__(self):
+            self.__name = 'Hatice'
+    p = person()
+    print(p.__name)   ##AttributeError der
+Python burada 'name mangling' uygular.
+# Name Mangling
+Name mangling ile tamamen gizleyemeyiz sadece yanlışlıkla erişilmesiini zorlaştırabilriz. Name mangling'e takılmadan private attribute'lara ulaşmak için:
+    class Person:
+        def __init__(self):
+        self.__name = "Hatice" 
+    p = Person()
+    print(p._Person__name)    # Çıktı: Hatice
+# Getter ve Setter Mantığı
+Diğer dillerde çok yaygındır(C++ ile aynı mantık). Kullanımlarına tam örnek verirsek:
+class BankAccount:                  Kullanımı:
+    def __init__(self):                  acc = BankAccount()
+        self.__balance = 0               acc.set_balance(1000)
+    def get_balance(self):               print(acc.get_balance())
+        return self.__balance            # Çıktı: 1000
+    def set_balance(self, amount):
+        if amount >= 0:
+        self.__balance = amount
+# @property
+Modern Python'da getter/setter yazmanın daha güzel yolu vardır. @property bir özelliğe kontrollü erişim sağlamak için kullanılır.Örnekte göstermek istersek:
+class BankAccount:                         Kullanımı:
+    def __init__(self):                       acc = BankAccount()
+        self.__balance = 0                    acc.balance = 100
+                                              print(acc.balance)
+    @property
+    def balance(self):
+        return self.__balance
+
+    @balance.setter
+    def balance(self, value):
+        if value < 0:
+            raise ValueError("Negatif değer!")
+        self.__balance = value
+DİKKAT: Getter/setter çalışıyor ama kullanım normal attribute gibi görünüyor.
+
+# class attributes ve instance attributes
+Bir benzetmeyle anlatırsak eğer class'ı bir apartman olarak düşünelim: class student: ... 
+Bu apartmandaki daireler ise nesneler(objects): s1 = student(), s2 = student()
+Bu benzetmeyi düşünerek:
+* Instance Attributes: Her nesneye özel olarak tutulan özelliklerdir. Genellikle __init__iinde oluşturulur.
+    class student:
+        def__init__(self, name):
+            self.name = name      # self.name bir instance attributes
+Eğer nesneleri oluşturursak:
+    s1 = student("Hatice")
+    s2 = student("Beyza")
+    s3 = student("Murat")
+bunların her biri bellekte kendilerine ait birer kopyaları olur çünkü bunlar dairelerin kendisine ait yani her nesne kendi verisini taşır.
+* Class Attributes: Sınıfa ait olan ve tüm nesneler tarfından ortak kullanılan özelliktir. Sınıf seviyesinde tanımlanır.
+class Student:
+
+    school = "Oxford"   #class attributes
+
+    def __init__(self, name):
+        self.name = name
+Oluşturulan tüm nesneler onu kullanır bu yüzden de class içinde sadece bir kere yazılır. Bellek görüntüleri: 
+Student Class
+ └── school = Oxford
+
+s1
+ └── name = Hatice
+
+s2
+ └── name = Ali
+
+s3
+ └── name = Ayşe
+
+ÖNEMLİ TEHLİKE: SHADOWİNG(GÖLGELEME):
+class student.
+    school = "Oxford"
+s1 = student()
+print(s1.school)     # çıktı: Oxford    // sınıftan okuyor
+s1.school = "MIT"   // class att. değişmedi python yeni bir instance att. oluşturdu.
+print(s1.school)    # çıktı: MIT
+print(student.school)  #çıktı: oxford
+bellek görüntüsü:
+Student
+ └── school = Oxford
+
+s1
+ └── school = MIT
+buradan da gördüğümüz üzere python bir nesne attribute ararken şu sırayı izler:
+1. Nesnenin içinde ara
+2. Sınıfta ara
+3. Parent sınıflarda ara
+# @classmethod kullanımı
+@classmethod, ilk parametre olarak nesneyi(self) değil, sınıfı(cls) alan methottur. Eğer class attribute'larla çalışıyorsak nesneyi değil sınıfı bilmemiz gerekir. Class method, sınıf seviyesindeki verilere erişmek veya sınıfı kullanarak yeni nesneler üretmek için kullanılan metottur.Pratikte iki temel kullanım alanı vardır:
+1. Class attribute yönetimi
+2. Alternatif constructor (alternatif nesne oluşturma)
+İkinci kullanım çok daha önemlidir.
+* Class Attribute Yönetmek
+class Student:                            Kullanımı:
+    school = "Oxford"                        Student.change_school("MIT")
+                                             print(Student.school)  # çıktı: MIT doğrudan sınıf değişkeni değiiştirildi. Hiç nesne olluşturulmadı.
+    @classmethod
+    def change_school(cls, new_school):
+        cls.school = new_school
+* @classmethod ile Alternatif Constructor
+class Person:
+                                         Kullanımı:
+    def __init__(self, name, age):             p1 = person("Hatice", 25)
+        self.name = name                       p2= person.from_string("Ali-30")
+        self.age = age
+
+    @classmethod
+    def from_string(cls, data):
+
+        name, age = data.split("-")
+
+        return cls(name, int(age))
+Bellekte şöyle tutulur:
+Person.from_string("Ali-30")
+          ↓
+name = Ali
+age = 30
+          ↓
+Person("Ali",30)
+          ↓
+Yeni nesne
+- örnekte olduğu gibi iki farklı bilgi girmesi gerekirken tek bir text giriyor biz de onu olması gereken formata çeviriyoruz.
+
+# @staticmethod kullanımı
+@staticmethod, sınıfın içinde bulunan ancak ne nesneye(self) ne de sınıfa(cls) ihtiyaç duyan metottur.Örneğin:
+class Math:
+                           Kullanımı:
+    @staticmethod              print(Math.add(3,5))   #Çıktı: 8
+    def add(a, b):
+        return a + b
+Bu methotu yazmaktansa fonksiyon yazabilirdik ama yaptığımız metot mantıksal olarak o sınıfa aittir.
