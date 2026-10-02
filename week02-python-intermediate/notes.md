@@ -540,3 +540,97 @@ class Math:
     def add(a, b):
         return a + b
 Bu methotu yazmaktansa fonksiyon yazabilirdik ama yaptığımız metot mantıksal olarak o sınıfa aittir.
+
+## Inheritance(Kalıtım)
+Kalıtım, bir sınıfın başka bir sınıfın özelliklerini(attributes) ve davranışlarını(methods) devralmasıdır. Gerçek hayatta düşünürsek: Hayvan adında bir class'ımız var ve isim, yaş ve nefes al() özelliklerine ve davranışlarına sahip sonuç olarak her hayvan buna sahiptir. Bir de köpek class'ı oluşturalım. O da bir hayvan oluğu için adı, yaşı vardır ve nefes alıyordur. Bu yüzden köpek Class'ta animal class'ından yararlanır, köpek sınıfı Animal sınıfından kalıtımsal miras alır.
+* Parent Class(Üst Sınıf): Özellikleri sağlayan sınıftır. Base veya superclass da kullanılır. Kalıtımı sağlayan, özelliklerinden yararlanılan, paylaşan sınıftır.
+* Child Class(Alt Sınıf): Üst sınıftan miras alan sınıftır. Derived veya subclass da denir.
+Hiyerarşi:
+Animal
+   │
+   ├── Dog
+   ├── Cat
+   └── Bird
+
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    def breathe(self):
+        print("Nefes alıyor")
+class Dog(Animal):
+    pass
+dog = Dog("Karabas")
+dog.breathe()
+
+Inheritance'ın avantajları nelerdir?
+1. Kod tekrarını azaltır: Her özelliği tekrar tekrar her classta yazmaktansa üst sınıfta yazıp diğerlerinde kullanırız.
+2. Bakımı kolaylaştırır: Bier değişiklik gerektiğinde yalnızca üst sınıf değiştirilir.
+Alt sınıfın üst sınıfın metotlarına erişebildiğini söyledik peki ama nasıl?
+# super() Fonksiyonu
+Bu fonksiyon ile alt sınıf üst sınıfın metotlarına erişebilir. 
+class Animal:
+    def __init__(self, name):
+        self.name = name
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)   #Animal.__init__(name)'i çağırmış olur. Yani Dog içinden Animal'ın kurucusu çalıştırılır.
+        self.breed = breed
+
+# Method Overriding(Metot Ezme)
+Üst sınıftan gelen bir metodun alt sınıfta yeniden tanımlanmasıdır.Yani:
+"Bu davranışın genel hali var ama ben kendi sınıfım için özel davranış istiyorum.". Örneğin:
+    class Animal:
+        def make_sound(self):
+            print("Bir ses çıkarıyor")
+
+    class Dog(Animal):
+        def make_sound(self):
+            print("Hav hav!")
+Animal'daki metod çalışmaz. Çünkü Dog onu override etmiştir. Burada override neden gerekli? Çünkü her hayvan ses çıkarır ama her biri farklı şekilde işte bu yüzden üst sınıf genel davranışı tanımlar, alt sınıflar özelliştirir.
+# super() ile Overriding Birlikte
+Üst sınıf davranışını koruyup genişletebiliriz.
+    class Animal:                     Çıktı:
+        def make_sound(self):             ses çıkartıyor.
+            print("Ses çıkarıyor")        Hav hav
+
+    class Dog(Animal):
+        def make_sound(self):
+            super().make_sound()
+            print("Hav hav")
+Önce animal sonra dog bölümü çalıştı.
+# Overriding ve Overloading Farkı
+Bu ikisi çok karıştırılır.
+- overriding alt sınıf mevcut metodu değiştirir.
+    class Dog(Animal):
+    def make_sound(self):
+        pass
+- overloading ayni isimli metodun farklı parametrelerle kullanılmasıdır.
+    add(a,b)
+    add(a,b,c)
+Python'da gerçek anlamda metod overloading yoktur. Varsayılan parametreler veya *args kullanılır.
+# Polymorphism(Çok Biçimlilik)
+Bir nesnenin farklı şekillerde davranabilmesidir. Aynı metot çağrısı farklı nesnelerde farklı sonuçlar üretebilir.
+class Dog:
+    def make_sound(self):           Çıktı:
+        print("Hav hav")                Hav hav
+                                        Miyav
+class Cat:
+    def make_sound(self):
+        print("Miyav")
+
+animals = [Dog(), Cat()]
+for animal in animals:
+    animal.make_sound()  # Kod aynı kaldı ama her nesnede davranışı değişti işte buna polymorphism diyoruz.
+
+## Composition(Bileşim)
+Bir nesnenin başka nesneleri kendi içinde kullanmasıdır. Bunu şu şekilde düşünebiliriz: Car has an Engine / Araba motora SAHİPTİR. Ama car bir engine değildir.
+
+Bu ilişkileri bir kurala göre belirliyoruz:
+1. IS-A İlişkisi
+Dog is an animal    # kalıtım
+2. Has-A İlişkisi
+Car has an engine   # Composition
+
+Bir yazılım mimarı gözüyle bakarsak, iyi tasarlanmış sistemlerin büyük çoğunluğu Composition üzerine kuruludur, kalıtım ise yalnızca gerçekten güçlü bir "is-a" ilişkisi varsa kullanılır. Bu yüzden modern frameworklerde sıkça duyacağın prensip şudur:
+"Kalıtım davranışı miras alır, Composition ise yetenekleri bir araya getirir."
+Ve çoğu zaman yetenekleri bir araya getirmek, yani Composition, daha esnek ve daha sürdürülebilir bir tasarım sağlar.
