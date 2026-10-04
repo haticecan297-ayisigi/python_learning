@@ -93,3 +93,115 @@ Bellek açısından son derece efektif olan bu fonksiyon, birden fazla koleksiyo
     isimler = ["Ada", "Alan"], idler = [101, 102]. list(zip(isimler, idler)) -> Çıktı: [("Ada", 101), ("Alan", 102)]
 - Eşleştirilmiş verilerden sözlük oluşturma: Paralel yapıdaki iki bağımsız listeden hızlıca bir hash table (sözlük) inşa etmenin en profesyonel yoludur. Örneğin:
     dict(zip(isimler, idler)) -> Çıktı: {"Ada": 101, "Alan": 102}
+
+### JSON VE VERİ SAKLAMA
+"JavaScript Object Notation" ifadesinin kısaltması olan JSON, farklı yazılım uygulamaları arasında (örneğin mikroservisler arası) veri alışverişinde ve verilerin kalıcı olarak saklanmasında endüstri standardı olarak sık kullanılan bir veri formatıdır. Bugün temel mühendislik amacımız; çalışma zamanındaki Python nesnelerini JSON formatına dönüştürmeyi (serialization/serileştirme) ve dış kaynaklı JSON verilerini Python belleğine geri aktarmayı (deserialization/ters serileştirme) öğrenmektir.
+Veri transferi yaparken dil bağımsız bir standart kullanmak esastır. Bu bağlamda JSON'un temel veri türlerinin (data types) Python dilindeki veri yapılarıyla eşleşmesini (mapping) öğrenmeniz gerekmektedir:
+- JSON'daki Object veri yapısı, Python dilinde anahtar-değer çiftlerinden oluşan dict yapısına denk gelir.
+- JSON'daki sıralı dizi olan Array, Python'da list olarak temsil edilir.
+- JSON'daki String türü, Python'da str veri tipiyle eşleşir.
+- JSON'daki Number türü, Python'da sayısal değerler olan int veya float olarak haritalanır.
+- Mantıksal durumu belirten Boolean yapısı, Python'da bool olarak değerlendirilir.
+- Herhangi bir değer barındırmayan Null veri tipi ise Python'da None objesine karşılık gelir.
+# JSON Modülü
+Python standart kütüphanesinde yer alan bu modül, dönüşüm ve ayrıştırma operasyonlarını yönetir. Öğrenmeniz gereken temel fonksiyonlar ve görevleri şunlardır:
+* json.dump() fonksiyonu: Bellekteki Python verisini doğrudan bir JSON dosyasına yazar (I/O akışı sağlar).
+* json.dumps() fonksiyonu: Python verisini ağ (network) üzerinden aktarmak üzere bir JSON metnine (string karakter dizisine) dönüştürür.
+* json.load() fonksiyonu: Diskteki bir JSON dosyasını okuyarak veriyi doğrudan Python verisine dönüştürür.
+* json.loads() fonksiyonu: Bir API'den dönen JSON metnini (string'i) bellekte Python verisine ayrıştırır (parse eder).
+# JSON Dosyası Oluşturma ve Okuma
+Kalıcı veri depolama operasyonlarında dosya işlemlerini standartlara uygun yönetmek kritik öneme sahiptir. Bu kapsamda dikkat edilecek hususlar şunlardır:
+- Kaynak sızıntılarını önlemek için dosya açma işlemi bağlam yöneticisi olan with open() ile yapılmalıdır.
+- Karakter kodlaması uyuşmazlıklarını engellemek adına uluslararası bir standart olan encoding="utf-8" kullanılmalıdır.
+- Veri bütünlüğü açısından, Türkçe karakterlerin diskte okunabilir biçimde saklanması için serileştirme esnasında ensure_ascii=False argümanı verilmelidir.
+- Oluşturulan JSON dosyasının bir insan tarafından kolayca incelenebilmesi için indent=4 parametresi kullanılarak dosyanın düzenli biçimde yazılması sağlanmalıdır.
+# Hata Yönetimi
+Dağıtık ve I/O bağımlı sistemlerde kodun çökmesini (crash) engellemek için defansif programlama yapılmalıdır. Bu amaçla JSON dosyası okunurken karşılaşılabilecek hata durumlarını öğrenmelisiniz:
+* İşletim sisteminde dosyanın bulunamaması durumuyla karşılaşılabilir.
+* Dosya içindeki JSON biçiminin yapısal olarak bozuk (syntax hatası) olması durumu ortaya çıkabilir.
+* Okunmaya çalışılan dosyanın tamamen boş olması sorunu yaşanabilir.
+* Ayrıştırma (parsing) işlemi sırasında sisteminizin algoritmasına uymayan, beklenmeyen bir veri yapısıyla karşılaşılması mümkündür.
+* Uygulama istikrarını korumak için, veri I/O operasyonlarında sıklıkla fırlatılan FileNotFoundError (dosya yoksa) ve json.JSONDecodeError (biçim bozuksa) hatalarını (exceptions), önceki günlerde öğrendiğiniz try-except hata yakalama mimarisi ile birleştirerek yönetmelisiniz.
+## Örneklerle pekiştirme
+# Makine Öğrenmesi Model Konfigürasyonlarının Yönetimi
+Yapay zeka projelerinde, bir modelin eğitim sürecindeki hiperparametreleri (hyperparameters) ve mimari ayarları kalıcı hale getirmek, deneylerin tekrarlanabilirliği (reproducibility) açısından zorunludur. Model ağırlıkları genellikle .h5 veya .pt gibi binary (ikili) formatlarda devasa dosyalar olarak saklanırken, insan tarafından okunması ve düzenlenmesi gereken konfigürasyonlar JSON formatında tutulur.
+    import json
+
+    # Model eğitim parametrelerini temsil eden Python sözlüğü
+    model_config = {
+        "model_name": "transformer_steganalysis_v1",
+        "hyperparameters": {
+            "learning_rate": 0.001,
+            "batch_size": 64,
+            "epochs": 150,
+            "optimizer": "Adam"
+        },
+        "dataset_path": "/data/train_set",
+        "is_training_complete": True
+    }
+    # Konfigürasyonu diske yazma (Serileştirme)
+    # Hata yönetimi için 'with' bloğu kullanılır, dosya otomatik kapatılır.
+    with open("model_config.json", "w", encoding="utf-8") as file:
+        json.dump(model_config, file, indent=4, ensure_ascii=False)
+    
+# Donanım ve Gömülü Sistem Durum (State) Yönetimi
+Sensör donanımları veya bir 4K Ultra HD Wi-Fi aksiyon kamerası gibi IoT tabanlı uç cihazlar (edge devices), kullanıcının cihaz üzerindeki son yapılandırmalarını dahili hafızasında bir settings.json dosyası içinde tutar. Cihazın güç döngüsü (reboot) her gerçekleştiğinde, yazılım bu dosyayı okuyarak (deserialization) donanımı kullanıcının bıraktığı konuma getirir.
+    import json
+    import os
+
+    def kamerayi_baslat():
+        dosya_yolu = "camera_settings.json"
+        
+        # Bellekte tutulan varsayılan fabrika ayarları
+        ayarlar = {
+            "resolution": "1080p",
+            "fps": 30,
+            "wifi_enabled": False,
+            "water_resistance_mode": "off"
+        }
+
+        # Eğer kullanıcının kaydettiği geçerli bir ayar dosyası varsa, onu belleğe yükle
+        if os.path.exists(dosya_yolu):
+            try:
+                with open(dosya_yolu, "r", encoding="utf-8") as file:
+                    ayarlar = json.load(file)
+            except json.JSONDecodeError:
+                print("Kritik: Ayar dosyası JSON formatı bozuk, fabrika ayarlarına dönülüyor.")
+            except PermissionError:
+                print("Kritik: Dosya okuma izni yok.")
+                
+        # Kamerayı donanımsal olarak ayarlar ile yapılandır (Simülasyon)
+        print(f"Kamera başlatılıyor... Çözünürlük: {ayarlar['resolution']}, Wi-Fi: {ayarlar['wifi_enabled']}")
+        return ayarlar
+
+    aktif_ayarlar = kamerayi_baslat()
+
+# Siber Güvenlik Loglarının İzlenmesi ve İletimi
+Sistemdeki anormal aktiviteleri veya yetkisiz erişim denemelerini kayıt altına almak için (audit logging), güvenlik olayları yapısal olmayan (unstructured) metinler yerine bir JSON dizisi (array of objects) formatında dış bir SIEM (Security Information and Event Management) sistemine iletilir. Bu, verinin makineler tarafından anında ayrıştırılmasını ve indekslenebilmesini sağlar.
+    import json
+    import datetime
+
+    # Güvenlik ihlali olaylarını simüle eden veriler (Python Listesi içinde Sözlükler)
+    security_events = [
+        {
+            "timestamp": datetime.datetime.now().isoformat(),
+            "event_type": "failed_login",
+            "source_ip": "192.168.1.105",
+            "target_user": "root",
+            "severity_level": "high"
+        },
+        {
+            "timestamp": datetime.datetime.now().isoformat(),
+            "event_type": "unauthorized_file_access",
+            "file_path": "/etc/shadow",
+            "source_ip": "10.0.0.12",
+            "severity_level": "critical"
+        }
+    ]
+
+    # Logları bir ağ soketi üzerinden merkezi sunucuya göndermek üzere metne dönüştürme
+    # json.dumps(), veriyi diske yazmadan doğrudan ağ paketine (payload) koymak için kullanılır.
+    network_payload = json.dumps(security_events)
+
+    print("İletilecek Byte/String Payload (API'ye gönderilen raw format):")
+    print(network_payload)

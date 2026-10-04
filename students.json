@@ -1,0 +1,23 @@
+{
+    "101": {
+        "isim": "Hatice Can",
+        "notlar": {
+            "Algoritma": 95,
+            "Matematik": 100
+        }
+    },
+    "102": {
+        "isim": "Beyza Işık",
+        "notlar": {
+            "Algoritma": 90,
+            "Matematik": 85
+        }
+    },
+    "103": {
+        "isim": "Pınar Adalı",
+        "notlar": {
+            "Algoritma": 60,
+            "Matematik": 45
+        }
+    }
+}
