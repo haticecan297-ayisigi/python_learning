@@ -205,3 +205,106 @@ Sistemdeki anormal aktiviteleri veya yetkisiz erişim denemelerini kayıt altın
 
     print("İletilecek Byte/String Payload (API'ye gönderilen raw format):")
     print(network_payload)
+
+### CSV DOSYALARI VE VERİ İŞLEME
+CSV(Comma-Separated Values) formatı; satır ve sütunlardan oluşan yapılandırılmış (structured) verileri, salt metin (plain text) biçiminde saklamak için kullanılan minimalist ve hafif bir veri aktarım standardıdır.
+- İçerik Yapısı: Dosyadaki her satır bir kaydı (record) temsil eder.   - Başlıklar (Headers): İlk satır (header row), genellikle verinin şemasını belirten sütun başlıklarını (metadata) içerir.
+- Ayrıştırıcı (Delimiter): Veri alanları (fields) tipik olarak virgül (,) ile ayrılır; ancak yerel ayarlara göre noktalı virgül (;) veya sekme (\t - TSV) de kullanılabilir.
+## CSV Modülü
+Python standart kütüphanesi, bu text dosyalarını ham string manipülasyonu (örn. .split(",")) ile ayrıştırmanın getireceği algoritmik hataları (örneğin veri içinde zaten virgül varsa) önlemek için optimize edilmiş bir csv modülü sunar. Öğrenmeniz gereken endüstriyel sınıflar ve fonksiyonlar şunlardır:
+* csv.reader(): Dosyayı satır satır okuyan bir iteratör döndürür. Her satırı Python'da bir string listesi (list) olarak temsil eder. Bellek verimlidir (lazy evaluation).
+* csv.writer(): Python listelerini alıp aralarına ayrıştırıcı karakter koyarak dosyaya yazar.   
+* csv.DictReader(): Gelişmiş veri manipülasyonu için standart okuyucudan daha üstündür. İlk satırı anahtar (key) olarak kabul eder ve sonraki her satırı bir Python sözlüğü (dict) olarak döndürür. Bu, sütun sırası değişse bile kodun kırılmamasını sağlar.   
+* csv.DictWriter(): Sözlük yapısındaki verileri CSV formatında yazmak için kullanılır.   
+* writeheader(): DictWriter nesnesi oluşturulduktan sonra, belirtilen alan adlarını (fieldnames) dosyanın ilk satırına başlık olarak yazar.   
+* writerow() ve writerows(): Tek bir satırı (liste veya sözlük) yazmak için writerow(), bir döngü kurmadan çoklu veriyi (liste içindeki listeler/sözlükler) tek seferde topluca (batch processing) diske yazmak için writerows() kullanılır. 
+## CSV Dosyası Okuma ve Yazma Pratikleri
+Sistem düzeyinde dosya operasyonları yaparken bellek sızıntılarını (memory leaks) önlemek ve veri bütünlüğünü sağlamak için uygulamanız gereken standartlar şunlardır:   
+- Bağlam Yöneticisi: Dosya I/O operasyonları her zaman with open() mimarisi içerisinde yapılmalıdır. Bu, işlem bitince dosya tanımlayıcısının (file descriptor) işletim sistemine güvenle iade edilmesini sağlar.   
+- Satır Sonu Standardizasyonu: Windows, Linux ve macOS işletim sistemleri farklı satır sonu karakterleri (\r\n, \n, \r) kullanır. Farklı platformlarda çalışan kodlarda fazladan boş satır oluşmasını engellemek için open() fonksiyonuna newline="" parametresi muhakkak verilmelidir.   
+- Karakter Kodlaması: Özellikle uluslararası projelerde veri bozulmasını önlemek için dosyalar encoding="utf-8" standardıyla açılmalıdır.   
+- Başlık İşleme (Header Handling): Geleneksel reader() kullanıyorsanız, next(reader) fonksiyonu ile ilk satır (başlık) atlanmalı veya ayrı bir değişkene kaydedilerek asıl veriden (payload) izole edilmelidir. 
+## JSON ve CSV Karşılaştırması (Mimari Karar Matrisi)
+Veri taşıma katmanında (data transport layer) hangi formatın seçileceği, verinin hiyerarşik doğasına bağlıdır.   
+* Veri Yapısı: JSON, çok boyutlu, iç içe geçmiş (nested) veri yapılarını doğal olarak desteklerken; CSV katı bir şekilde iki boyutlu, satır ve sütun odaklıdır (düz/flat veriler).   
+* Kullanım Alanı: JSON, modern web API'lerinde uygulamalar arası iletişim ve yapılandırılmış karmaşık kayıtlar için kullanılırken; CSV, makine öğrenmesi veri setleri ve tablo biçimindeki ilişkisel verilerin dökümü (export) için standarttır.   
+* Python Karşılığı: JSON, Python'da dict ve list kombinasyonlarıyla birebir örtüşürken; CSV verileri satırlar ve sütunlar (liste içi listeler veya liste içi sözlükler) olarak algılanır.   
+* Karmaşık Veri Desteği: JSON çok daha esnektir (örn. bir değerin içinde başka bir liste/sözlük barındırabilir), CSV ise bu tür hiyerarşileri ifade etmekte son derece sınırlıdır.
+
+## CSV Örneklerle Pekiştirme
+# Makine Öğrenmesi: Steganaliz Veri Seti Filtreleme
+Görüntü steganografisi (özellikle LSB - En Az Anlamlı Bit gizleme teknikleri) araştırmalarında, yapay zeka modellerini eğitmek için kullanılan binlerce görüntünün metadataları ve anomali skorları CSV formatında tutulur. Bu senaryoda, bir araştırma projesindeki veri setini okuyup, gizli veri barındırma ihtimali (anomali skoru) belirli bir eşiğin üzerinde olan kayıtları filtreleyerek sıralayacağız.
+    import csv
+
+    def supheli_goruntuleri_analiz_et(dosya_yolu):
+        # Bellek optimizasyonu için veriyi parça parça okuyan üreteç (generator) mantığı
+        with open(dosya_yolu, mode="r", encoding="utf-8", newline="") as dosya:
+            okuyucu = csv.DictReader(dosya)
+            
+            # 1. filter() ve lambda ile anomali skoru 0.85 üzeri olanları (şüpheli) filtreleme
+            # Sütunlar: image_id, resolution, lsb_modification_flag, anomaly_score
+            supheliler = filter(lambda satir: float(satir["anomaly_score"]) > 0.85, okuyucu)
+            
+            # 2. sorted() ve lambda ile şüphelileri anomali skoruna göre azalan sırayla dizme
+            # filter() bir iteratör döndürdüğü için list() dönüşümü sorted() içinde otomatik gerçekleşir
+            sirali_supheliler = sorted(
+                supheliler, 
+                key=lambda item: float(item["anomaly_score"]), 
+                reverse=True
+            )
+            
+        return sirali_supheliler
+
+    # Örnek Çıktı Üretimi: Dictionary Comprehension ile sadece ID ve Skor eşleştirmesi
+    # ornek_sonuc = {satir["image_id"]: satir["anomaly_score"] for satir in sirali_supheliler}
+
+# Siber Güvenlik: Ağ Trafiği Log Analizi
+Temel siber güvenlik operasyonlarında, ağ izleme (network monitoring) sistemleri güvenlik ihlallerini veya yetkisiz port taramalarını CSV olarak diske yazar. İşletim sisteminden elde edilen bu ham log dosyasını okuyarak, sadece dışarıdan gelen başarısız bağlantı denemelerini ayrıştıracağız.
+    import csv
+
+    def saldiri_tespiti_yap(log_dosyasi):
+        with open(log_dosyasi, mode="r", encoding="utf-8", newline="") as dosya:
+            okuyucu = csv.reader(dosya)
+            
+            # Başlık satırını atlama (Header Handling)
+            basliklar = next(okuyucu)
+            
+            # List Comprehension kullanılarak tek satırda filtreleme ve dönüştürme işlemi
+            # Varsayılan CSV Şeması: timestamp, source_ip, target_port, status
+            # Sadece durumu "Failed" olan ve 22 (SSH) veya 3389 (RDP) portlarına gelen istekleri yakala
+            tehdit_vektoru = [
+                {"ip": satir[1], "port": satir[2], "zaman": satir[0]} 
+                for satir in okuyucu 
+                if satir[3] == "Failed" and satir[2] in ("22", "3389")
+            ]
+            
+        return tehdit_vektoru
+
+# Yazılım Geliştirme Platformları: İlerleme Raporu Serileştirme
+LeetCode, Exercism ve GitHub gibi platformlardaki algoritmik gelişim süreçlerini tek bir merkezde toplamak için farklı listelerdeki dağınık verileri birleştirip yapılandırılmış bir CSV raporu olarak diske yazacağız. Bu işlem için paralel dizileri entegre eden zip() fonksiyonunu ve sözlük formatında yazım sağlayan csv.DictWriter sınıfını kullanacağız.
+    import csv
+
+    def algoritma_raporu_olustur(hedef_dosya):
+        # Farklı API'lerden veya modüllerden gelmiş bağımsız ham veri listeleri
+        platformlar = ["LeetCode", "Exercism", "GitHub_Cohorts"]
+        cozulen_sorular = [145, 82, 34]
+        zorluk_dereceleri = ["Hard", "Medium", "Mixed"]
+        
+        # zip() ile üç bağımsız listeyi aynı indeks numaralarına göre tuple'lar halinde eşleştirme
+        birlestirilmis_veri = zip(platformlar, cozulen_sorular, zorluk_dereceleri)
+        
+        # Veriyi CSV yazıcısının (DictWriter) anlayacağı sözlük formatına Map'leme (List Comprehension)
+        csv_verisi = [
+            {"platform": p, "cozulen_soru": c, "ortalama_zorluk": z}
+            for p, c, z in birlestirilmis_veri
+        ]
+        
+        # Diske Yazma (Serileştirme) Operasyonu
+        with open(hedef_dosya, mode="w", encoding="utf-8", newline="") as dosya:
+            alan_adlari = ["platform", "cozulen_soru", "ortalama_zorluk"]
+            
+            yazici = csv.DictWriter(dosya, fieldnames=alan_adlari)
+            
+            # Önce başlık satırını oluştur, sonra tüm listeyi batch (toplu) olarak diske yaz
+            yazici.writeheader()
+            yazici.writerows(csv_verisi)
