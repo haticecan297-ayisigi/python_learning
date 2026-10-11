@@ -1,0 +1,18 @@
+[
+    {
+        "t_id": "71cb7f2c",
+        "description": "kyk bursu",
+        "amount": 4000.0,
+        "category": "burs",
+        "date": "2026-10-06",
+        "t_type": "gelir"
+    },
+    {
+        "t_id": "2896b312",
+        "description": "kyk yurt ücreti",
+        "amount": 1455.0,
+        "category": "kira",
+        "date": "2026-10-11",
+        "t_type": "gider"
+    }
+]
